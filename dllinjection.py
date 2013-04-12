@@ -11,9 +11,6 @@ PAGE_READWRITE     = 0x04
 PROCESS_ALL_ACCESS = (0x000F0000 | 0x00100000 | 0xFFF)
 VIRTUAL_MEM        = (0x1000 | 0x2000)
 
-h_kernel32 = kernel32.GetModuleHandleA("kernel32.dll")
-load_library  = kernel32.GetProcAddress(h_kernel32, "LoadLibraryA")
-
 def inject_dll(pid, dll_path, thread_id=0):
     ''' 
     Inject dll into remote process by process id 
@@ -24,6 +21,8 @@ def inject_dll(pid, dll_path, thread_id=0):
     assert isinstance(thread_id, int)
     assert isinstance(dll_path, basestring)
     kernel32 = windll.kernel32
+    h_kernel32 = kernel32.GetModuleHandleA("kernel32.dll")
+    load_library  = kernel32.GetProcAddress(h_kernel32, "LoadLibraryA")
     h_process = kernel32.OpenProcess(PROCESS_ALL_ACCESS, False, pid)
     if not h_process:
         raise RuntimeError("Couldn't acquire a handle to PID: %d" % pid)
